@@ -40,6 +40,7 @@ export function EditNoteForm({ slug }: EditNoteFormProps) {
   const [mobilePane, setMobilePane] = useState<'editor' | 'preview'>('editor');
   const [busy, setBusy] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteCode, setDeleteCode] = useState('');
   const [isPublished, setIsPublished] = useState(false);
   const [toast, setToast] = useState<{ message: string; tone: 'success' | 'error' | 'info' } | null>(null);
   
@@ -258,11 +259,12 @@ export function EditNoteForm({ slug }: EditNoteFormProps) {
       return;
     }
 
+    const codeToUse = editCode || deleteCode;
     try {
       const response = await fetch(`/api/notes/${slug}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ editCode })
+        body: JSON.stringify({ editCode: codeToUse })
       });
       const data = (await response.json()) as ApiResponse;
 
@@ -409,19 +411,31 @@ export function EditNoteForm({ slug }: EditNoteFormProps) {
         <Footer />
       </div>
 
-      <Dialog open={deleteOpen} title="Delete note" onClose={() => setDeleteOpen(false)}>
+      <Dialog open={deleteOpen} title="Delete note" onClose={() => { setDeleteOpen(false); setDeleteCode(''); }}>
         <div className="flex flex-col gap-4">
           <p className="font-ui text-sm leading-6 text-[var(--color-text-soft)]">
-            {isPublished 
+            {isPublished
               ? <>This will permanently remove the note <strong>/{slug}</strong> from the database. This action cannot be undone.</>
               : <>This will remove the draft <strong>/{slug}</strong> from your local archive. You will lose the content of this note.</>
             }
           </p>
+          {isPublished && !editCode && (
+            <label className="flex flex-col gap-1.5">
+              <span className="mono-label">Edit code</span>
+              <Input
+                value={deleteCode}
+                onChange={(e) => setDeleteCode(e.target.value)}
+                type="password"
+                autoComplete="current-password"
+                placeholder="Enter your edit code to confirm"
+              />
+            </label>
+          )}
           <div className="flex justify-end gap-2 mt-2">
-            <Button variant="ghost" type="button" onClick={() => setDeleteOpen(false)}>
+            <Button variant="ghost" type="button" onClick={() => { setDeleteOpen(false); setDeleteCode(''); }}>
               Cancel
             </Button>
-            <Button variant="danger" type="button" onClick={deleteNote} disabled={busy}>
+            <Button variant="danger" type="button" onClick={deleteNote} disabled={busy || (isPublished && !editCode && deleteCode.length < 8)}>
               Delete permanently
             </Button>
           </div>
