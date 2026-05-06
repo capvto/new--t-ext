@@ -1,0 +1,46 @@
+{
+  "name": "text",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A minimal self-hosted Markdown publishing app.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "backup": "node scripts/backup.mjs"
+  },
+  "dependencies": {
+    "@libsql/client": "0.14.0",
+    "bcryptjs": "2.4.3",
+    "framer-motion": "^12.38.0",
+    "highlight.js": "11.11.1",
+    "katex": "^0.16.45",
+    "lucide-react": "0.468.0",
+    "next": "^16.2.4",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-markdown": "9.0.3",
+    "rehype-katex": "^7.0.1",
+    "rehype-sanitize": "6.0.0",
+    "remark-gfm": "4.0.0",
+    "remark-math": "^6.0.0",
+    "zod": "3.24.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "2.4.6",
+    "@types/node": "22.10.5",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "10.4.20",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.4",
+    "postcss": "8.5.14",
+    "puppeteer": "^24.42.0",
+    "tailwindcss": "3.4.17",
+    "typescript": "5.7.2"
+  },
+  "overrides": {
+    "postcss": "8.5.14"
+  }
+}

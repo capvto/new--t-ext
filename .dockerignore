@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+.DS_Store
+*.local
+data
+public/uploads
+README.md
+Dockerfile
+docker-compose.yml
+.env
