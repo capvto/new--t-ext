@@ -164,7 +164,13 @@ export function PublishForm() {
         })
       });
 
-      const data = (await response.json()) as ApiCreateResponse;
+      let data: ApiCreateResponse;
+      try {
+        data = (await response.json()) as ApiCreateResponse;
+      } catch {
+        setToast({ message: `Server error (${response.status}). Check server logs.`, tone: 'error' });
+        return;
+      }
       if (!response.ok || !data.ok || !data.note) {
         setToast({ message: data.error || 'Could not publish note.', tone: 'error' });
         return;

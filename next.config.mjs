@@ -7,6 +7,7 @@ const appRoot = path.dirname(fileURLToPath(import.meta.url));
 const nextConfig = {
   output: 'standalone',
   poweredByHeader: false,
+  serverExternalPackages: ['@libsql/client', 'bcryptjs'],
   turbopack: {
     root: appRoot
   },
