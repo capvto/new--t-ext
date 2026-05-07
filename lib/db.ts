@@ -168,6 +168,17 @@ export async function updateNoteContent(input: {
   });
 }
 
+export async function listPublicSlugs() {
+  await ensureMigrated();
+  const result = await getDb().execute(
+    'SELECT slug, updated_at as updatedAt FROM notes WHERE deleted_at IS NULL ORDER BY updated_at DESC'
+  );
+  return result.rows.map((row) => ({
+    slug: String(row.slug),
+    updatedAt: String(row.updatedAt)
+  }));
+}
+
 export async function deleteNoteById(id: string) {
   await ensureMigrated();
   await getDb().execute({

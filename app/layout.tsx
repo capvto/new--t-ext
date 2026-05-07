@@ -3,7 +3,10 @@ import './globals.css';
 import { AppearanceBoot } from '@/components/settings/AppearanceSettings';
 import { ScrollToTop } from '@/components/layout/ScrollToTop';
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: '(t)ext',
     template: '%s | (t)ext'
@@ -11,6 +14,11 @@ export const metadata: Metadata = {
   description: 'A minimal self-hosted Markdown publishing app.',
   icons: {
     icon: '/favicon.svg'
+  },
+  openGraph: {
+    siteName: '(t)ext',
+    type: 'website',
+    locale: 'en_US'
   }
 };
 
