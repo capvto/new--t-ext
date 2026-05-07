@@ -4,7 +4,6 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
 ![SQLite](https://img.shields.io/badge/SQLite-3-003B57?style=flat-square&logo=sqlite)
 ![Tailwind](https://img.shields.io/badge/Tailwind-3-38B2AC?style=flat-square&logo=tailwind-css)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
 **(t)ext** is a minimal, high-fidelity Markdown editor and publishing platform designed for writers who value privacy, simplicity, and speed. It follows a "publish-and-forget" flow inspired by Rentry: write, set a secret code, and publish to a custom URL without ever creating an account.
 
@@ -101,10 +100,6 @@ Check `.env.example` for available configuration options:
 - `ADMIN_PASSWORD_HASH`: Enable the optional admin dashboard to manage all published notes.
 
 ---
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
 
 Developed by [Matteo Caputo](https://matteocaputo.dev).
 
