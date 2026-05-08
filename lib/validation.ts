@@ -21,7 +21,7 @@ const contentSchema = z
   .min(1, 'Markdown content is required.')
   .max(MAX_CONTENT_LENGTH, `Markdown content must be ${MAX_CONTENT_LENGTH} characters or fewer.`);
 
-const editCodeSchema = z
+export const editCodeSchema = z
   .string()
   .min(8, 'Edit code must be at least 8 characters.')
   .max(256, 'Edit code is too long.');
@@ -43,6 +43,22 @@ export const verifyEditCodeSchema = z.object({
   editCode: editCodeSchema
 });
 
+export const changeEditCodeSchema = z
+  .object({
+    currentEditCode: editCodeSchema,
+    newEditCode: editCodeSchema,
+    confirmEditCode: editCodeSchema
+  })
+  .refine((v) => v.newEditCode === v.confirmEditCode, {
+    message: 'New edit codes do not match.',
+    path: ['confirmEditCode']
+  })
+  .refine((v) => v.currentEditCode !== v.newEditCode, {
+    message: 'New edit code must be different from the current edit code.',
+    path: ['newEditCode']
+  });
+
 export type CreateNoteInput = z.infer<typeof createNoteSchema>;
 export type UpdateNoteInput = z.infer<typeof updateNoteSchema>;
 export type VerifyEditCodeInput = z.infer<typeof verifyEditCodeSchema>;
+export type ChangeEditCodeInput = z.infer<typeof changeEditCodeSchema>;

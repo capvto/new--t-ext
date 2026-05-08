@@ -6,6 +6,7 @@
 
 :root {
   color-scheme: dark;
+  --font-family-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   --color-bg: #0a0a0a;
   --color-surface: #111111;
   --color-surface-high: #161616;
@@ -224,11 +225,31 @@ a {
 .prose-content ul,
 .prose-content ol {
   margin: 0 0 1.5em;
-  padding-left: 1.5rem;
+  padding-left: 1.6rem;
 }
+
+.prose-content ul { list-style: disc; }
+.prose-content ul ul { list-style: circle; }
+.prose-content ul ul ul { list-style: square; }
+
+.prose-content ol { list-style: decimal; }
+.prose-content ol ol { list-style: lower-alpha; }
+.prose-content ol ol ol { list-style: lower-roman; }
 
 .prose-content li {
   margin-bottom: 0.4em;
+}
+
+.prose-content li > p { margin-bottom: 0.5em; }
+.prose-content li::marker { color: var(--color-text-soft); }
+
+.prose-content .contains-task-list {
+  padding-left: 0;
+  list-style: none;
+}
+
+.prose-content .task-list-item {
+  list-style: none;
 }
 
 .prose-content blockquote {
@@ -244,7 +265,7 @@ a {
   border-radius: var(--radius-base);
   background: var(--color-surface);
   padding: 0.2em 0.45em;
-  font-family: var(--font-family-ui);
+  font-family: var(--font-family-mono);
   font-size: 0.875em;
 }
 
@@ -261,6 +282,7 @@ a {
   border: 0;
   background: transparent;
   padding: 0;
+  font-family: var(--font-family-mono);
   font-size: 13px;
 }
 
@@ -442,6 +464,304 @@ input[type='range']::-moz-range-thumb {
   background: var(--color-primary-c);
   cursor: pointer;
 }
+
+/* ─── Images ─────────────────────────────────────────────────────────── */
+
+.prose-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1.5rem auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  background: var(--color-surface-lowest);
+}
+
+.prose-content .broken-image {
+  color: var(--color-text-faint);
+  font-family: var(--font-family-ui);
+  font-size: 0.85em;
+  font-style: italic;
+}
+
+/* ─── Heading anchors ────────────────────────────────────────────────── */
+
+.prose-content h1,
+.prose-content h2,
+.prose-content h3,
+.prose-content h4 {
+  scroll-margin-top: 80px;
+}
+
+.prose-content .heading-anchor {
+  margin-left: 0.4em;
+  color: var(--color-text-faint);
+  text-decoration: none;
+  opacity: 0;
+  font-family: var(--font-family-ui);
+  font-size: 0.75em;
+  transition: opacity 0.15s ease;
+}
+
+.prose-content h1:hover .heading-anchor,
+.prose-content h2:hover .heading-anchor,
+.prose-content h3:hover .heading-anchor,
+.prose-content h4:hover .heading-anchor {
+  opacity: 1;
+}
+
+/* ─── Callouts / alerts ──────────────────────────────────────────────── */
+
+.prose-content .callout {
+  margin: 1.5rem 0;
+  border: 1px solid var(--color-border);
+  border-left-width: 3px;
+  border-left-color: var(--color-border-strong);
+  border-radius: var(--radius-base);
+  background: var(--color-surface-lowest);
+  padding: 1rem 1.1rem;
+}
+
+.prose-content .callout-title {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-family-ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.prose-content .callout > :last-child {
+  margin-bottom: 0;
+}
+
+.prose-content .callout-info,
+.prose-content .callout-note { border-left-color: var(--color-primary-c); }
+.prose-content .callout-tip { border-left-color: var(--color-primary-c); }
+.prose-content .callout-success { border-left-color: var(--color-success); }
+.prose-content .callout-warning { border-left-color: #d6a84f; }
+.prose-content .callout-danger { border-left-color: var(--color-danger); }
+
+/* ─── Table of contents ──────────────────────────────────────────────── */
+
+.prose-content .markdown-toc {
+  margin: 1.5rem 0 2rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  background: var(--color-surface-lowest);
+  padding: 1rem 1.1rem;
+  font-family: var(--font-family-ui);
+  font-size: 14px;
+}
+
+.prose-content .markdown-toc-title {
+  margin-bottom: 0.6rem;
+  color: var(--color-text-soft);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.prose-content .markdown-toc ol {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.prose-content .markdown-toc li {
+  margin-bottom: 0.2em;
+}
+
+.prose-content .markdown-toc a {
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.prose-content .markdown-toc a:hover {
+  color: var(--color-primary);
+}
+
+/* ─── Code cards ─────────────────────────────────────────────────────── */
+
+.prose-content .code-card {
+  margin: 1.5rem 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  background: var(--color-surface-lowest);
+}
+
+.prose-content .code-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding: 0.55rem 0.75rem;
+  font-family: var(--font-family-ui);
+  font-size: 12px;
+  color: var(--color-text-soft);
+}
+
+.prose-content .code-card-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-muted);
+  font-family: var(--font-family-mono);
+}
+
+.prose-content .code-card-lang {
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 0.1rem 0.45rem;
+  font-size: 10px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.prose-content .code-card-copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text-soft);
+  cursor: pointer;
+  padding: 0.25rem 0.35rem;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.prose-content .code-card-copy:hover {
+  color: var(--color-text);
+}
+
+.prose-content .code-card .code-card-pre,
+.prose-content .code-card pre {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.prose-content .code-line {
+  display: block;
+  min-height: 1.4em;
+  padding: 0 1.25rem;
+}
+
+.prose-content .code-line.is-highlighted {
+  background: rgba(113, 112, 214, 0.12);
+}
+
+.prose-content .code-line[data-line]::before {
+  content: attr(data-line);
+  display: inline-block;
+  width: 2rem;
+  margin-right: 1.25rem;
+  color: var(--color-text-faint);
+  text-align: right;
+  user-select: none;
+}
+
+.prose-content .diff-add {
+  background: rgba(141, 189, 141, 0.1);
+}
+
+.prose-content .diff-del {
+  background: rgba(217, 125, 125, 0.1);
+}
+
+/* Code card color variants */
+.prose-content .code-card-blue { border-color: #3b82f640; }
+.prose-content .code-card-blue .code-card-header { border-bottom-color: #3b82f640; }
+.prose-content .code-card-purple { border-color: #7170d640; }
+.prose-content .code-card-purple .code-card-header { border-bottom-color: #7170d640; }
+.prose-content .code-card-green { border-color: #8dbd8d40; }
+.prose-content .code-card-green .code-card-header { border-bottom-color: #8dbd8d40; }
+.prose-content .code-card-yellow { border-color: #d6a84f40; }
+.prose-content .code-card-yellow .code-card-header { border-bottom-color: #d6a84f40; }
+.prose-content .code-card-red { border-color: #d97d7d40; }
+.prose-content .code-card-red .code-card-header { border-bottom-color: #d97d7d40; }
+.prose-content .code-card-pink { border-color: #e879a040; }
+.prose-content .code-card-pink .code-card-header { border-bottom-color: #e879a040; }
+
+/* ─── CodeMirror editor overrides ────────────────────────────────────── */
+
+.text-editor-wrapper {
+  position: relative;
+}
+
+.text-editor-cm {
+  height: 100%;
+  min-height: inherit;
+}
+
+/* Force transparent background on all CodeMirror elements */
+.text-editor-cm .cm-editor,
+.text-editor-cm .cm-editor.cm-focused {
+  background: transparent !important;
+  outline: none !important;
+}
+
+.text-editor-cm .cm-scroller {
+  font-family: var(--font-family-mono);
+  font-size: 14px;
+  line-height: 1.65;
+  min-height: inherit;
+}
+
+.text-editor-cm .cm-content {
+  min-height: inherit;
+  padding: 0;
+  caret-color: var(--color-primary);
+}
+
+/* Markdown syntax highlighting colors (dark theme) */
+.text-editor-cm .cm-editor .tok-heading,
+.text-editor-cm .cm-editor .tok-heading1,
+.text-editor-cm .cm-editor .tok-heading2,
+.text-editor-cm .cm-editor .tok-heading3 {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.text-editor-cm .cm-editor .tok-emphasis {
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+.text-editor-cm .cm-editor .tok-strong {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.text-editor-cm .cm-editor .tok-monospace,
+.text-editor-cm .cm-editor .tok-code {
+  color: var(--color-primary);
+  font-family: var(--font-family-mono);
+}
+
+.text-editor-cm .cm-editor .tok-link,
+.text-editor-cm .cm-editor .tok-url {
+  color: var(--color-primary);
+}
+
+.text-editor-cm .cm-editor .tok-meta,
+.text-editor-cm .cm-editor .tok-processingInstruction {
+  color: var(--color-text-faint);
+}
+
+/* Placeholder */
+.text-editor-cm .cm-placeholder {
+  color: var(--color-text-faint);
+  font-family: var(--font-family-mono);
+}
+
+/* ─── Dialogs ─────────────────────────────────────────────────────────── */
 
 @keyframes dialog-overlay {
   from { opacity: 0; }

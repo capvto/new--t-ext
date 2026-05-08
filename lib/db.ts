@@ -186,3 +186,15 @@ export async function deleteNoteById(id: string) {
     args: [id]
   });
 }
+
+export async function updateNoteEditCodeHash(input: {
+  id: string;
+  editCodeHash: string;
+  updatedAt: string;
+}) {
+  await ensureMigrated();
+  await getDb().execute({
+    sql: 'UPDATE notes SET edit_code_hash = ?, updated_at = ? WHERE id = ?',
+    args: [input.editCodeHash, input.updatedAt, input.id]
+  });
+}

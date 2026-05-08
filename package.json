@@ -1,6 +1,6 @@
 {
   "name": "text",
-  "version": "1.0.0",
+  "version": "2.0.1",
   "private": true,
   "description": "A minimal self-hosted Markdown publishing app.",
   "scripts": {
@@ -11,20 +11,32 @@
     "backup": "node scripts/backup.mjs"
   },
   "dependencies": {
+    "@codemirror/autocomplete": "^6.20.2",
+    "@codemirror/commands": "^6.10.3",
+    "@codemirror/lang-markdown": "^6.5.0",
+    "@codemirror/language-data": "^6.5.2",
+    "@codemirror/search": "^6.7.0",
+    "@codemirror/state": "^6.6.0",
+    "@codemirror/view": "^6.42.1",
     "@libsql/client": "0.14.0",
+    "@uiw/react-codemirror": "^4.25.9",
     "bcryptjs": "2.4.3",
     "framer-motion": "^12.38.0",
+    "github-slugger": "^2.0.0",
     "highlight.js": "11.11.1",
     "katex": "^0.16.45",
     "lucide-react": "0.468.0",
+    "mdast-util-to-string": "^4.0.0",
     "next": "^16.2.4",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-markdown": "9.0.3",
     "rehype-katex": "^7.0.1",
     "rehype-sanitize": "6.0.0",
+    "remark-directive": "^4.0.0",
     "remark-gfm": "4.0.0",
     "remark-math": "^6.0.0",
+    "unist-util-visit": "^5.1.0",
     "zod": "3.24.1"
   },
   "devDependencies": {

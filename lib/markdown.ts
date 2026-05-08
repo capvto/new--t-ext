@@ -1,66 +1,13 @@
-import { defaultSchema } from 'rehype-sanitize';
-
-export const MAX_CONTENT_LENGTH = 200_000;
-export const MAX_TITLE_LENGTH = 120;
-
-export const markdownSanitizeSchema = {
-  ...defaultSchema,
-  attributes: {
-    ...defaultSchema.attributes,
-    code: [
-      ...(defaultSchema.attributes?.code || []),
-      ['className', /^language-[a-zA-Z0-9_-]+$/]
-    ],
-    span: [
-      ...(defaultSchema.attributes?.span || []),
-      ['className', 'math-inline', 'math-display', 'math']
-    ],
-    div: [
-      ...(defaultSchema.attributes?.div || []),
-      ['className', 'math-inline', 'math-display', 'math']
-    ],
-    input: [
-      ...(defaultSchema.attributes?.input || []),
-      ['type', 'checkbox'],
-      'checked',
-      'disabled'
-    ],
-    a: [
-      ...(defaultSchema.attributes?.a || []),
-      'href',
-      'title',
-      'target',
-      'rel'
-    ]
-  },
-  tagNames: [
-    ...(defaultSchema.tagNames || []),
-    'input',
-    'table',
-    'thead',
-    'tbody',
-    'tr',
-    'th',
-    'td',
-    'u'
-  ]
-};
-
-export function isSafeUrl(value: unknown) {
-  if (typeof value !== 'string') return false;
-  const href = value.trim();
-  if (!href) return false;
-  if (href.startsWith('#') || href.startsWith('/')) return true;
-
-  try {
-    const url = new URL(href);
-    return ['http:', 'https:', 'mailto:'].includes(url.protocol);
-  } catch {
-    return false;
-  }
-}
+// Barrel file — mantiene compatibilità con import esistenti
+export * from './markdown/constants';
+export * from './markdown/urls';
+export * from './markdown/sanitize';
+export * from './markdown/emoji';
+export * from './markdown/toc';
+export * from './markdown/codeMeta';
 
 export function extractTitle(markdown: string) {
+  const MAX_TITLE_LENGTH = 120;
   const firstHeading = markdown
     .split('\n')
     .map((line) => line.trim())

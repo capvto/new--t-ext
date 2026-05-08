@@ -3,7 +3,7 @@
 import { FormEvent, useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { Eye, LockKeyhole, PenLine, Save, Trash2, CheckCircle2 } from 'lucide-react';
+import { Eye, KeyRound, LockKeyhole, PenLine, Save, Trash2, CheckCircle2 } from 'lucide-react';
 import { MarkdownEditor } from '@/components/editor/MarkdownEditor';
 import { MarkdownPreview } from '@/components/editor/MarkdownPreview';
 import { Button } from '@/components/ui/Button';
@@ -46,6 +46,11 @@ export function EditNoteForm({ slug }: EditNoteFormProps) {
   
   const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const initialMount = useRef(true);
+
+  const [changeCodeOpen, setChangeCodeOpen] = useState(false);
+  const [currentEditCode, setCurrentEditCode] = useState('');
+  const [newEditCode, setNewEditCode] = useState('');
+  const [confirmEditCode, setConfirmEditCode] = useState('');
 
   // Auto-unlock if a verified code was stored from the public note page
   useEffect(() => {
@@ -247,6 +252,39 @@ export function EditNoteForm({ slug }: EditNoteFormProps) {
     }
   }
 
+  async function changeCode(event: FormEvent) {
+    event.preventDefault();
+    if (newEditCode !== confirmEditCode) {
+      setToast({ message: 'New edit codes do not match.', tone: 'error' });
+      return;
+    }
+    if (newEditCode === currentEditCode) {
+      setToast({ message: 'New edit code must be different.', tone: 'error' });
+      return;
+    }
+    setBusy(true);
+    try {
+      const response = await fetch(`/api/notes/${slug}/edit-code`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentEditCode, newEditCode, confirmEditCode })
+      });
+      const data = await response.json();
+      if (!response.ok || !data.ok) {
+        setToast({ message: data.error || 'Could not change edit code.', tone: 'error' });
+        return;
+      }
+      setEditCode(newEditCode);
+      window.sessionStorage.setItem(`text_editcode:${slug}`, newEditCode);
+      setToast({ message: 'Edit code changed. Save it somewhere safe.', tone: 'success' });
+      setChangeCodeOpen(false);
+    } catch {
+      setToast({ message: 'Network error.', tone: 'error' });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function deleteNote() {
     setBusy(true);
     setToast(null);
@@ -373,6 +411,21 @@ export function EditNoteForm({ slug }: EditNoteFormProps) {
             </div>
             
             <div className="w-px h-5 bg-[var(--color-border)] mx-1 hidden sm:block" />
+            {isPublished && (
+              <Button
+                variant="ghost"
+                type="button"
+                title="Change edit code"
+                onClick={() => {
+                  setCurrentEditCode(editCode);
+                  setNewEditCode('');
+                  setConfirmEditCode('');
+                  setChangeCodeOpen(true);
+                }}
+              >
+                <KeyRound size={16} strokeWidth={1.5} />
+              </Button>
+            )}
             <Button variant="danger" type="button" onClick={() => setDeleteOpen(true)}>
               <Trash2 size={16} strokeWidth={1.5} />
             </Button>
@@ -440,6 +493,59 @@ export function EditNoteForm({ slug }: EditNoteFormProps) {
             </Button>
           </div>
         </div>
+      </Dialog>
+
+      <Dialog open={changeCodeOpen} title="Change edit code" onClose={() => setChangeCodeOpen(false)}>
+        <form onSubmit={changeCode} className="flex flex-col gap-4">
+          <p className="font-ui text-sm leading-6 text-[var(--color-text-soft)]">
+            Enter your current edit code and choose a new one (min 8 characters).
+          </p>
+          <label className="flex flex-col gap-1.5">
+            <span className="mono-label">Current edit code</span>
+            <Input
+              value={currentEditCode}
+              onChange={(e) => setCurrentEditCode(e.target.value)}
+              type="password"
+              autoComplete="current-password"
+              required
+              minLength={8}
+            />
+          </label>
+          <label className="flex flex-col gap-1.5">
+            <span className="mono-label">New edit code</span>
+            <Input
+              value={newEditCode}
+              onChange={(e) => setNewEditCode(e.target.value)}
+              type="password"
+              autoComplete="new-password"
+              required
+              minLength={8}
+            />
+          </label>
+          <label className="flex flex-col gap-1.5">
+            <span className="mono-label">Confirm new edit code</span>
+            <Input
+              value={confirmEditCode}
+              onChange={(e) => setConfirmEditCode(e.target.value)}
+              type="password"
+              autoComplete="new-password"
+              required
+              minLength={8}
+            />
+          </label>
+          <div className="flex justify-end gap-2 mt-2">
+            <Button variant="ghost" type="button" onClick={() => setChangeCodeOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={busy || newEditCode.length < 8 || newEditCode !== confirmEditCode}
+            >
+              Change code
+            </Button>
+          </div>
+        </form>
       </Dialog>
 
       <Toast message={toast?.message || null} tone={toast?.tone} />

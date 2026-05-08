@@ -1,105 +1,160 @@
 # (t)ext 2.0
 
-![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)
+![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
 ![SQLite](https://img.shields.io/badge/SQLite-3-003B57?style=flat-square&logo=sqlite)
 ![Tailwind](https://img.shields.io/badge/Tailwind-3-38B2AC?style=flat-square&logo=tailwind-css)
+![Version](https://img.shields.io/badge/version-2.0.1-7170d6?style=flat-square)
 
-**(t)ext** is a minimal, high-fidelity Markdown editor and publishing platform designed for writers who value privacy, simplicity, and speed. It follows a "publish-and-forget" flow inspired by Rentry: write, set a secret code, and publish to a custom URL without ever creating an account.
-
----
-
-## ✨ Features
-
-- **Minimalist Writing Experience**: A distraction-free editor with a clean, dark-first interface.
-- **Local-First Archive**: Organize your drafts locally in your browser. No cloud account required.
-- **Folder Organization**: Group your notes into folders with support for **Drag & Drop** organization.
-- **Personalization**: Customize your folders with curated colors and distinct icons.
-- **LaTeX & Math Support**: Full support for KaTeX to render complex mathematical equations.
-- **Secure Publishing**: Each note is protected by a bcrypt-hashed edit code. Only you can modify or delete your content.
-- **Import/Export**: Easily move your notes in and out of the app using standard `.md` files.
-- **Self-Hosted & Private**: No external databases or tracking. Your data belongs to you.
-
-## 🛠 Tech Stack
-
-- **Framework**: Next.js (App Router)
-- **Styling**: Tailwind CSS
-- **Database**: SQLite (via `libsql`)
-- **Markdown**: React-Markdown with GFM, Math, and KaTeX support
-- **Animations**: Framer Motion for UI transitions
-- **Security**: Bcryptjs for secure code hashing, Zod for validation
+**(t)ext** is a minimal, self-hosted Markdown editor and publishing platform. Write, set a secret edit code, and publish to a custom URL — no account required.
 
 ---
 
-## 🚀 Getting Started
+## Features
 
-### Using Docker (Recommended)
-
-The easiest way to self-host **(t)ext** is using Docker Compose.
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/text.git
-   cd text
-   ```
-
-2. Create your environment file:
-   ```bash
-   cp .env.example .env
-   ```
-
-3. Spin up the container:
-   ```bash
-   docker compose up -d
-   ```
-
-Access the app at `http://localhost:3000`. Your data will be persisted in the `./data` directory.
-
-### Local Development
-
-If you want to contribute or run it locally:
-
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-2. Run the development server:
-   ```bash
-   npm run dev
-   ```
-
-3. Open [http://localhost:3000](http://localhost:3000) in your browser.
+- **Distraction-free editor** — CodeMirror 6 with native Markdown syntax highlighting and full undo/redo history
+- **Live preview** — Side-by-side rendering that mirrors the public page exactly
+- **Advanced Markdown** — Emoji shortcodes (`!rocket!` → 🚀), callout blocks (`:::info`, `:::warning`), custom heading IDs, inline table of contents (`[[toc]]`), and protocol-less link normalisation
+- **Advanced code blocks** — Language badge, filename header, optional line numbers, line highlighting, colour variants, diff styling
+- **Safe by default** — Raw HTML stripped, dangerous URL protocols blocked, bcrypt-hashed edit codes, Zod-validated inputs
+- **Autosave** — Local drafts for unpublished notes; debounced server autosave for published notes
+- **Import / Export** — Load from or save to `.md` files directly from the toolbar
+- **Change edit code** — Rotate the edit code from the edit view without losing access to the note
+- **Math support** — KaTeX for inline and block LaTeX expressions
+- **Self-hosted & private** — SQLite, no external services, no tracking
 
 ---
 
-## 📂 Folder System & Organization
+## Tech Stack
 
-(t)ext 2.0 introduces a robust local organizational system:
-- **Drag & Drop**: Drag notes onto folders to categorize them.
-- **Breadcrumb Navigation**: Seamlessly navigate through your hierarchy.
-- **Customization**: Right-click or use the settings icon on a folder to change its color and icon.
-- **All-Notes Drop**: Drag a note onto the "All Notes" breadcrumb to quickly move it out of a folder.
-
----
-
-## 🛡 Security & Privacy
-
-- **No Cookies**: (t)ext does not use tracking or profiling cookies.
-- **Local Storage**: Your drafts and organization settings never leave your browser.
-- **Hashed Codes**: Edit codes are never stored in plain text.
-- **Sanitized Output**: All Markdown is sanitized to prevent XSS attacks.
+| Layer | Library |
+|---|---|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript 5 |
+| Styling | Tailwind CSS |
+| Editor | CodeMirror 6 (`@uiw/react-codemirror`) |
+| Markdown | react-markdown + remark/rehype pipeline |
+| Database | SQLite via `@libsql/client` |
+| Animations | Framer Motion |
+| Security | bcryptjs · Zod · rehype-sanitize |
 
 ---
 
-## ⚙️ Configuration
+## Getting Started
 
-Check `.env.example` for available configuration options:
-- `PORT`: Change the default port.
-- `DATA_DIR`: Customize where the SQLite database is stored.
-- `ADMIN_PASSWORD_HASH`: Enable the optional admin dashboard to manage all published notes.
+### Docker (recommended)
+
+```bash
+git clone https://github.com/capvto/new--t-ext.git
+cd new--t-ext
+cp .env.example .env
+docker compose up -d
+```
+
+Open `http://localhost:3000`. Data is persisted in `./data`.
+
+### Local development
+
+```bash
+npm install
+npm run dev
+```
+
+---
+
+## Markdown syntax
+
+### Callout blocks
+
+```md
+:::info
+Informational note.
+:::
+
+:::warning Heads up
+Something to pay attention to.
+:::
+```
+
+Supported types: `info`, `note`, `tip`, `success`, `warning`, `danger`  
+Aliases: `warn`, `error`, `ok`, `caution`, `important`
+
+GitHub-style alerts are also supported:
+
+```md
+> [!NOTE]
+> Text here.
+```
+
+### Emoji shortcodes
+
+```md
+!rocket!  →  🚀
+!100!     →  💯
+!fire!    →  🔥
+!check!   →  ✅
+```
+
+Escape with `\!rocket!` to prevent substitution. Shortcodes inside code blocks are never transformed.
+
+### Custom heading IDs
+
+```md
+## My Section {#my-section}
+```
+
+### Table of contents
+
+```md
+[[toc]]
+```
+
+### Advanced code blocks
+
+````md
+```tsx title="components/Button.tsx" {2,5-7} lineNumbers color="purple"
+export function Button() {
+  return <button>Click me</button>;
+}
+```
+````
+
+Options: `title="..."` · `{lines}` · `lineNumbers` · `color="blue|purple|green|yellow|red|pink|neutral"` · `diff`
+
+### Protocol-less links
+
+```md
+[My site](example.com)  →  https://example.com
+```
+
+`javascript:`, `data:`, and `vbscript:` URLs are blocked.
+
+---
+
+## Configuration
+
+See `.env.example`:
+
+| Variable | Description |
+|---|---|
+| `PORT` | HTTP port (default `3000`) |
+| `DATA_DIR` | Directory for the SQLite database |
+| `SQLITE_PATH` | Full path to the `.db` file |
+| `ADMIN_PASSWORD_HASH` | Bcrypt hash to enable the admin dashboard |
+| `IP_HASH_SALT` | Salt for IP anonymisation |
+| `BCRYPT_ROUNDS` | Bcrypt work factor (default `12`) |
+
+---
+
+## Security
+
+- Edit codes are bcrypt-hashed and never stored in plain text
+- All Markdown HTML is stripped (`skipHtml`) — no raw HTML execution
+- URLs are validated and normalised before rendering
+- Inputs are validated server-side with Zod
+- Rate limiting on edit, delete, and code-change endpoints
+- IP addresses are hashed before storage
 
 ---
 
 Developed by [Matteo Caputo](https://matteocaputo.dev).
-

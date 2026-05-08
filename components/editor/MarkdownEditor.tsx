@@ -1,7 +1,13 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
-import { MarkdownToolbar, type FormatType } from '@/components/editor/MarkdownToolbar';
+import { useCallback, useState, useEffect, useRef } from 'react';
+import CodeMirror, { type ReactCodeMirrorRef } from '@uiw/react-codemirror';
+import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
+import { languages } from '@codemirror/language-data';
+import { EditorView, keymap } from '@codemirror/view';
+import { defaultKeymap, historyKeymap } from '@codemirror/commands';
+import { MarkdownToolbar } from '@/components/editor/MarkdownToolbar';
+import { applyMarkdownFormat, type FormatType } from '@/components/editor/editorCommands';
 import { wordCount } from '@/lib/markdown';
 import { readSettings } from '@/lib/appearance';
 
@@ -11,158 +17,101 @@ type MarkdownEditorProps = {
   minHeightClass?: string;
 };
 
+const textEditorTheme = EditorView.theme({
+  '&': {
+    background: 'transparent !important',
+    backgroundColor: 'transparent !important',
+    color: 'var(--color-text)',
+    fontFamily: 'var(--font-family-mono)',
+    fontSize: '14px',
+    height: '100%'
+  },
+  '&.cm-focused': { outline: 'none !important' },
+  '.cm-scroller': {
+    fontFamily: 'inherit',
+    overflow: 'auto',
+    lineHeight: '1.65'
+  },
+  '.cm-content': {
+    padding: '0',
+    caretColor: 'var(--color-primary)'
+  },
+  '.cm-line': { padding: '0' },
+  '.cm-gutters': {
+    background: 'transparent !important',
+    backgroundColor: 'transparent !important',
+    color: 'var(--color-text-faint)',
+    border: '0'
+  },
+  '.cm-cursor, .cm-dropCursor': { borderLeftColor: 'var(--color-primary)' },
+  '.cm-selectionBackground': {
+    background: 'var(--color-primary-c) !important'
+  },
+  '.cm-activeLine': { backgroundColor: 'transparent !important' },
+  '.cm-activeLineGutter': { backgroundColor: 'transparent !important' }
+}, { dark: true });
+
 export function MarkdownEditor({ value, onChange, minHeightClass = 'min-h-[520px]' }: MarkdownEditorProps) {
-  const ref = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<ReactCodeMirrorRef>(null);
   const [showToolbar, setShowToolbar] = useState(false);
 
   useEffect(() => {
     setShowToolbar(readSettings().showToolbar);
-    
+
     function handleSettingsChange(e: Event) {
-      const customEvent = e as CustomEvent;
-      setShowToolbar(customEvent.detail.showToolbar);
+      setShowToolbar((e as CustomEvent).detail.showToolbar);
     }
-    
+
     window.addEventListener('text_settings_changed', handleSettingsChange);
     return () => window.removeEventListener('text_settings_changed', handleSettingsChange);
   }, []);
 
-  function insertFormat(type: FormatType) {
-    const textarea = ref.current;
-    if (!textarea) return;
+  const handleFormat = useCallback((type: FormatType) => {
+    const view = editorRef.current?.view;
+    if (!view) return;
+    applyMarkdownFormat(view, type);
+  }, []);
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selected = value.slice(start, end);
-    const before = value.slice(0, start);
-    const after = value.slice(end);
-    let insert = '';
-    let cursorOffset = 0;
-
-    if (type === 'undo') {
-      textarea.focus();
-      document.execCommand('undo');
-      return;
-    }
-
-    if (type === 'redo') {
-      textarea.focus();
-      document.execCommand('redo');
-      return;
-    }
-
-    switch (type) {
-      case 'h2':
-        insert = selected ? `## ${selected}` : `## `;
-        cursorOffset = insert.length;
-        break;
-      case 'h3':
-        insert = selected ? `### ${selected}` : `### `;
-        cursorOffset = insert.length;
-        break;
-      case 'bold':
-        insert = selected ? `**${selected}**` : `****`;
-        cursorOffset = selected ? insert.length : 2;
-        break;
-      case 'italic':
-        insert = selected ? `*${selected}*` : `**`;
-        cursorOffset = selected ? insert.length : 1;
-        break;
-      case 'underline':
-        insert = selected ? `<u>${selected}</u>` : `<u></u>`;
-        cursorOffset = selected ? insert.length : 3;
-        break;
-      case 'code':
-        insert = selected ? `\`${selected}\`` : `\`\``;
-        cursorOffset = selected ? insert.length : 1;
-        break;
-      case 'blockquote':
-        insert = selected ? selected.split('\n').map((line) => `> ${line}`).join('\n') : `> `;
-        cursorOffset = insert.length;
-        break;
-      case 'link':
-        insert = selected ? `[${selected}](https://)` : `[](https://)`;
-        cursorOffset = selected ? insert.length - 1 : 1;
-        break;
-      case 'ul':
-        insert = selected ? selected.split('\n').map((line) => `- ${line}`).join('\n') : `- `;
-        cursorOffset = insert.length;
-        break;
-      case 'ol':
-        insert = selected
-          ? selected.split('\n').map((line, index) => `${index + 1}. ${line}`).join('\n')
-          : `1. `;
-        cursorOffset = insert.length;
-        break;
-      case 'task':
-        insert = selected ? selected.split('\n').map((line) => `- [ ] ${line}`).join('\n') : `- [ ] `;
-        cursorOffset = insert.length;
-        break;
-      case 'codeblock':
-        insert = selected ? `\n\`\`\`\n${selected}\n\`\`\`\n` : `\n\`\`\`\n\n\`\`\`\n`;
-        cursorOffset = selected ? insert.length : 5;
-        break;
-      case 'hr':
-        insert = '\n---\n';
-        cursorOffset = insert.length;
-        break;
-    }
-
-    const next = before + insert + after;
-    
-    textarea.focus();
-    textarea.setSelectionRange(start, end);
-    document.execCommand('insertText', false, insert);
-    onChange(next);
-
-    requestAnimationFrame(() => {
-      textarea.focus();
-      const pos = start + cursorOffset;
-      textarea.setSelectionRange(pos, pos);
-    });
-  }
-
-  const adjustHeight = () => {
-    const textarea = ref.current;
-    if (textarea) {
-      textarea.style.height = 'auto';
-      textarea.style.height = `${textarea.scrollHeight}px`;
-    }
-  };
-
-  useEffect(() => {
-    adjustHeight();
-  }, [value, showToolbar]);
-
-  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-    if (e.metaKey || e.ctrlKey) {
-      if (e.key.toLowerCase() === 'b') {
-        e.preventDefault();
-        insertFormat('bold');
-      } else if (e.key.toLowerCase() === 'i') {
-        e.preventDefault();
-        insertFormat('italic');
-      } else if (e.key.toLowerCase() === 'u') {
-        e.preventDefault();
-        insertFormat('underline');
-      }
-    }
-  }
+  const extensions = [
+    markdown({ base: markdownLanguage, codeLanguages: languages }),
+    textEditorTheme,
+    EditorView.lineWrapping,
+    keymap.of([...defaultKeymap, ...historyKeymap])
+  ];
 
   return (
     <div className="flex flex-col w-full h-full">
       {showToolbar && (
-        <MarkdownToolbar onFormat={insertFormat} wordCount={wordCount(value)} />
+        <MarkdownToolbar onFormat={handleFormat} wordCount={wordCount(value)} />
       )}
-      <textarea
-        ref={ref}
-        value={value}
-        spellCheck
-        onChange={(event) => onChange(event.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="Start writing..."
-        className={`w-full resize-none border-0 bg-transparent p-0 ${showToolbar ? 'mt-4' : ''} md:px-8 md:pb-8 font-ui text-[15px] leading-relaxed outline-none focus:ring-0 ${minHeightClass} overflow-hidden`}
-      />
+      <div className={`text-editor-wrapper w-full ${showToolbar ? 'mt-4' : ''} md:px-8 md:pb-8 ${minHeightClass}`}>
+        <CodeMirror
+          ref={editorRef}
+          value={value}
+          onChange={onChange}
+          extensions={extensions}
+          theme="none"
+          basicSetup={{
+            lineNumbers: false,
+            foldGutter: false,
+            dropCursor: true,
+            allowMultipleSelections: true,
+            indentOnInput: true,
+            bracketMatching: true,
+            closeBrackets: false,
+            autocompletion: false,
+            rectangularSelection: false,
+            crosshairCursor: false,
+            highlightActiveLine: false,
+            highlightActiveLineGutter: false,
+            highlightSelectionMatches: false,
+            syntaxHighlighting: true,
+            searchKeymap: false
+          }}
+          spellCheck
+          className="text-editor-cm"
+        />
+      </div>
     </div>
   );
 }
