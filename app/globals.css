@@ -76,6 +76,7 @@
 html {
   min-height: 100%;
   background: var(--color-bg);
+  scroll-behavior: smooth;
 }
 
 body {
@@ -178,6 +179,10 @@ a {
 
 .editor-grid[data-mobile-pane='preview'] .editor-panel {
   display: none;
+}
+
+.preview-panel {
+  scroll-behavior: smooth;
 }
 
 
@@ -580,6 +585,101 @@ input[type='range']::-moz-range-thumb {
 
 .prose-content .markdown-toc a:hover {
   color: var(--color-primary);
+}
+
+/* ─── Article layout with TOC sidebar ────────────────────────────────── */
+
+.article-layout-toc {
+  display: grid;
+  grid-template-columns: minmax(0, 720px) 200px;
+  align-items: start;
+  gap: 3rem;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+@media (max-width: 860px) {
+  .article-layout-toc {
+    grid-template-columns: 1fr;
+  }
+  .article-toc-sidebar {
+    display: none;
+  }
+}
+
+.preview-toc-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.preview-toc-layout > article {
+  flex: 1;
+  min-width: 0;
+}
+
+.preview-toc-layout > aside {
+  width: 180px;
+  flex-shrink: 0;
+}
+
+/* ─── Sidebar TOC ─────────────────────────────────────────────────────── */
+
+.sidebar-toc {
+  position: sticky;
+  top: 2rem;
+  font-family: var(--font-family-ui);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.sidebar-toc-title {
+  margin-bottom: 0.875rem;
+  padding-left: 0.875rem;
+  color: var(--color-text-faint);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sidebar-toc ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-left: 1px solid var(--color-border);
+}
+
+.sidebar-toc ol ol {
+  border-left: none;
+  padding-left: 0.875rem;
+}
+
+.sidebar-toc li {
+  margin-bottom: 0.05em;
+}
+
+.sidebar-toc a {
+  display: block;
+  color: var(--color-text-faint);
+  text-decoration: none;
+  padding: 0.22em 0.875rem;
+  margin-left: -1px;
+  border-left: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-toc a:hover {
+  color: var(--color-primary);
+  border-left-color: var(--color-primary-c);
+}
+
+.sidebar-toc-active {
+  color: var(--color-primary) !important;
+  border-left-color: var(--color-primary-c) !important;
 }
 
 /* ─── Code cards ─────────────────────────────────────────────────────── */

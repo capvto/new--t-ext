@@ -15,7 +15,7 @@ export function Footer() {
           onClick={() => setOpen(true)}
           className="hover:text-[var(--color-text)] transition-colors"
         >
-          v 2.0.1
+          v 2.0.2
         </button>
         <span className="opacity-50">•</span>
         <Link href="/cookies" className="hover:text-[var(--color-text)] transition-colors">
@@ -39,11 +39,18 @@ export function Footer() {
         <div className="space-y-5 text-[13px] leading-relaxed" style={{ fontFamily: 'var(--font-family-ui)' }}>
 
           <div>
+            <div className="mono-label mb-2.5">v 2.0.2</div>
+            <ul className="space-y-2 text-[var(--color-text-soft)]">
+              <li><span className="text-[var(--color-text)] font-medium">Automatic Table of Contents.</span> A sidebar TOC appears automatically in the preview and on published notes whenever a document contains 2 or more headings.</li>
+            </ul>
+          </div>
+
+          <div className="border-t border-[var(--color-border)] pt-4">
             <div className="mono-label mb-2.5">v 2.0.1</div>
             <ul className="space-y-2 text-[var(--color-text-soft)]">
               <li><span className="text-[var(--color-text)] font-medium">Advanced Markdown.</span> Emoji shortcodes, callout blocks, custom heading IDs, inline table of contents.</li>
               <li><span className="text-[var(--color-text)] font-medium">CodeMirror Editor.</span> Native Markdown syntax highlighting, full undo/redo history, line wrapping.</li>
-              <li><span className="text-[var(--color-text)] font-medium">Toolbar.</span> Image, TOC, and Alert buttons. Clean insertion without placeholder text.</li>
+              <li><span className="text-[var(--color-text)] font-medium">Toolbar.</span> Image and Alert buttons. Clean insertion without placeholder text.</li>
               <li><span className="text-[var(--color-text)] font-medium">Advanced Code Blocks.</span> Filename, language badge, line numbers, line highlighting, colour variants, diff styling.</li>
               <li><span className="text-[var(--color-text)] font-medium">Safe Links & Images.</span> Protocol-less URLs normalised to https://. Dangerous protocols blocked.</li>
               <li><span className="text-[var(--color-text)] font-medium">HTML Stripped.</span> Raw HTML in Markdown fully ignored — no XSS vectors.</li>

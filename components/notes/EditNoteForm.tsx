@@ -12,6 +12,8 @@ import { Input } from '@/components/ui/Input';
 import { Toast } from '@/components/ui/Toast';
 import { removeLocalArchive, upsertLocalArchive } from '@/lib/localArchive';
 import { Footer } from '@/components/layout/Footer';
+import { getMarkdownToc } from '@/lib/markdown';
+import { SidebarTableOfContents } from '@/components/markdown/SidebarTableOfContents';
 
 type EditNoteFormProps = {
   slug: string;
@@ -351,6 +353,9 @@ export function EditNoteForm({ slug }: EditNoteFormProps) {
     );
   }
 
+  const toc = getMarkdownToc(content);
+  const hasToc = toc.length >= 2;
+
   return (
     <form onSubmit={save} className="flex min-h-[calc(100vh-56px)] flex-col p-4 md:p-6 lg:p-8 max-w-[1400px] mx-auto w-full">
       <div className="flex-1 flex flex-col">
@@ -448,7 +453,18 @@ export function EditNoteForm({ slug }: EditNoteFormProps) {
             <MarkdownEditor value={content} onChange={setContent} minHeightClass="min-h-[200px]" />
           </section>
           <section className="preview-panel overflow-auto px-0 md:px-8 py-0">
-            <MarkdownPreview content={content} />
+            {hasToc ? (
+              <div className="preview-toc-layout">
+                <article>
+                  <MarkdownPreview content={content} />
+                </article>
+                <aside>
+                  <SidebarTableOfContents items={toc} />
+                </aside>
+              </div>
+            ) : (
+              <MarkdownPreview content={content} />
+            )}
           </section>
         </div>
       </div>

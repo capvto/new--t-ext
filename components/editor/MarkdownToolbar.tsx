@@ -1,6 +1,6 @@
 'use client';
 
-import { Code2, Heading2, Heading3, Image as ImageIcon, Link2, List, ListOrdered, Minus, Quote, SquareCheck, Undo2, Redo2, AlignLeft, BellRing } from 'lucide-react';
+import { Code2, Heading2, Heading3, Image as ImageIcon, Link2, List, ListOrdered, Minus, Quote, SquareCheck, Undo2, Redo2, BellRing } from 'lucide-react';
 import type { FormatType } from './editorCommands';
 
 export type { FormatType };
@@ -51,9 +51,6 @@ export function MarkdownToolbar({ onFormat, wordCount }: MarkdownToolbarProps) {
       </button>
       <button type="button" className="toolbar-btn" title="Horizontal rule" onClick={() => onFormat('hr')}>
         <Minus size={14} strokeWidth={1.5} />
-      </button>
-      <button type="button" className="toolbar-btn" title="Table of contents [[toc]]" onClick={() => onFormat('toc')}>
-        <AlignLeft size={14} strokeWidth={1.5} />
       </button>
       <button type="button" className="toolbar-btn" title="Alert / callout" onClick={() => onFormat('alert')}>
         <BellRing size={14} strokeWidth={1.5} />

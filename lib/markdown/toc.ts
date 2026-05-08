@@ -1,3 +1,5 @@
+import GithubSlugger from 'github-slugger';
+
 export type TocItem = {
   depth: 2 | 3 | 4;
   id: string;
@@ -5,13 +7,34 @@ export type TocItem = {
   children?: TocItem[];
 };
 
-function slugify(text: string): string {
+// Mirrors remarkCustomHeadingIds: only outer text nodes count toward the slug.
+// Bold/italic/code/image nodes are filtered out by the remark AST visitor,
+// so we strip their content here; links become their anchor text.
+function plainTextForSlug(text: string): string {
   return text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')     // images → gone
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '')     // links → gone (link node, not text node)
+    .replace(/`[^`]*`/g, '')                   // inline code → gone
+    .replace(/\*\*([^*]*)\*\*/g, '')           // bold → gone
+    .replace(/__([^_]*)__/g, '')
+    .replace(/\*([^*]*)\*/g, '')               // italic → gone
+    .replace(/_([^_]*)_/g, '')
+    .replace(/~~([^~]*)~~/g, '')               // strikethrough → gone
+    .trim();
+}
+
+// Strip markdown syntax for display (keep the inner text).
+function stripInlineMarkdown(text: string): string {
+  return text
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/`([^`]*)`/g, '$1')
+    .replace(/\*\*([^*]*)\*\*/g, '$1')
+    .replace(/__([^_]*)__/g, '$1')
+    .replace(/\*([^*]*)\*/g, '$1')
+    .replace(/_([^_]*)_/g, '$1')
+    .replace(/~~([^~]*)~~/g, '$1')
+    .trim();
 }
 
 function extractCustomId(text: string): { text: string; id: string | null } {
@@ -24,7 +47,7 @@ function extractCustomId(text: string): { text: string; id: string | null } {
 
 export function getMarkdownToc(markdown: string): TocItem[] {
   const lines = markdown.split('\n');
-  const slugCounter = new Map<string, number>();
+  const slugger = new GithubSlugger();
   const items: TocItem[] = [];
 
   for (const line of lines) {
@@ -34,14 +57,12 @@ export function getMarkdownToc(markdown: string): TocItem[] {
     const depth = match[1].length as 2 | 3 | 4;
     const rawText = match[2].trim();
     const { text, id: customId } = extractCustomId(rawText);
-    const cleanText = text.trim();
+    const displayText = stripInlineMarkdown(text);
 
-    const baseSlug = customId || slugify(cleanText);
-    const count = slugCounter.get(baseSlug) || 0;
-    slugCounter.set(baseSlug, count + 1);
-    const id = count === 0 ? baseSlug : `${baseSlug}-${count}`;
+    // Custom IDs bypass the slugger (matching remarkCustomHeadingIds behavior).
+    const id = customId ?? slugger.slug(plainTextForSlug(text));
 
-    items.push({ depth, id, text: cleanText });
+    items.push({ depth, id, text: displayText });
   }
 
   return buildTocTree(items);

@@ -5,10 +5,12 @@ import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LockKeyhole } from 'lucide-react';
 import { MarkdownPreview } from '@/components/editor/MarkdownPreview';
+import { SidebarTableOfContents } from '@/components/markdown/SidebarTableOfContents';
 import { Dialog } from '@/components/ui/Dialog';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Toast } from '@/components/ui/Toast';
+import { getMarkdownToc } from '@/lib/markdown';
 import type { PublicNote } from '@/types/note';
 
 type NoteArticleProps = {
@@ -17,6 +19,8 @@ type NoteArticleProps = {
 
 export function NoteArticle({ note }: NoteArticleProps) {
   const router = useRouter();
+  const toc = getMarkdownToc(note.contentMarkdown);
+  const hasToc = toc.length >= 2;
   const [publishedFlash, setPublishedFlash] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editCode, setEditCode] = useState('');
@@ -82,10 +86,17 @@ export function NoteArticle({ note }: NoteArticleProps) {
         </div>
       </header>
 
-      <article className="mx-auto max-w-article px-5 py-12 md:py-16">
-        {note.title ? <h1 className="article-title mb-8">{note.title}</h1> : null}
-        <MarkdownPreview content={note.contentMarkdown} />
-      </article>
+      <div className={`mx-auto px-5 py-12 md:py-16 ${hasToc ? 'article-layout-toc' : 'max-w-article'}`}>
+        <article>
+          {note.title ? <h1 className="article-title mb-8">{note.title}</h1> : null}
+          <MarkdownPreview content={note.contentMarkdown} />
+        </article>
+        {hasToc && (
+          <aside className="article-toc-sidebar">
+            <SidebarTableOfContents items={toc} />
+          </aside>
+        )}
+      </div>
 
       <footer className="border-t border-[var(--color-border)] px-5 py-5">
         <div className="mx-auto flex max-w-article flex-col gap-2 font-ui text-[10px] uppercase tracking-[0.08em] text-[var(--color-text-faint)] sm:flex-row sm:items-center sm:justify-between">
