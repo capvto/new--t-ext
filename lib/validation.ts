@@ -46,12 +46,7 @@ export const verifyEditCodeSchema = z.object({
 export const changeEditCodeSchema = z
   .object({
     currentEditCode: editCodeSchema,
-    newEditCode: editCodeSchema,
-    confirmEditCode: editCodeSchema
-  })
-  .refine((v) => v.newEditCode === v.confirmEditCode, {
-    message: 'New edit codes do not match.',
-    path: ['confirmEditCode']
+    newEditCode: editCodeSchema
   })
   .refine((v) => v.currentEditCode !== v.newEditCode, {
     message: 'New edit code must be different from the current edit code.',
