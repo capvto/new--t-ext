@@ -23,7 +23,7 @@ export function Dialog({ open, title, children, onClose }: DialogProps) {
             <X size={16} strokeWidth={1.5} />
           </Button>
         </div>
-        <div className="p-5">{children}</div>
+        <div className="p-5 max-h-[60vh] overflow-y-auto">{children}</div>
       </div>
     </div>
   );
